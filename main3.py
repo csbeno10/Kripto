@@ -9,6 +9,8 @@ def setup():
     #q = 13
     p = random_prime(10, 500)
     q = random_prime(10, 500)
+    while (p==q):
+        q = random_prime(10, 500)
     n = p * q
     x = random.randint(1, n - 1)
     y_squared = (x ** 2) % n
@@ -29,8 +31,8 @@ def prover(n):
     return t, r
 
 
-def fiat_shamir_challenge(t, n, y_squared, i):
-    hash_input = f"{t}{n}{y_squared}{i}".encode()
+def fiat_shamir_challenge(t, n, y_squared, rand):
+    hash_input = f"{t}{n}{y_squared}{rand}".encode()
     hash_value = hashlib.sha256(hash_input).hexdigest()
     c = int(hash_value, 16) % 2
     print(f"Fiat-Shamir Challenge:\n  Hash input = {hash_input}, c = {c}")
@@ -57,7 +59,8 @@ def main():
     t, r = prover(n)
     for i in range(0,10):
 
-        c = fiat_shamir_challenge(t, n, y_squared,i)
+        rand = random.randint(1, 1000)
+        c = fiat_shamir_challenge(t, n, y_squared,rand)
         s = prover_response(r, x, c, n)
         verification_result = verifier_verification(s, t, y_squared, n, c)
 
